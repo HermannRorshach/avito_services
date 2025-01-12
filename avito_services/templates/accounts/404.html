@@ -1,0 +1,15 @@
+{% extends "auth.html" %}
+{% block title %}Puslapis nerastas{% endblock %}
+{% block content %}
+  <main>
+    <div class="container">
+      <br>
+      <h1>Страница не найдена</h1>
+      <br>
+      <p> Страницы по адресу "{{ path }}" не существует</p>
+      <br>
+      <a href="{% url 'accounts:services' %}">Перейти в сервисы</a>
+      <br>
+    </div>
+  </main>
+{% endblock %}
