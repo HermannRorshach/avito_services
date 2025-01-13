@@ -1,23 +1,19 @@
-from django.shortcuts import render
-from django.urls import reverse_lazy
-from django.views.generic import DetailView, ListView
-from django.views.generic.edit import CreateView
-
-from .forms import AdvertForm
-from .models import Advert
-
-
-import zipfile
 import os
-import tempfile
+
 import boto3
 from botocore.config import Config
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
-from django.views.generic.edit import CreateView
+from django.utils.decorators import method_decorator
 from django.views import View
-from .models import Advert
-from .forms import AdvertForm
+from django.views.generic import DeleteView, DetailView, ListView
+from django.views.generic.edit import CreateView
 from dotenv import load_dotenv
+
+from .forms import TaskForm
+from .models import Task
 
 # Загружаем переменные окружения
 load_dotenv()
@@ -36,60 +32,30 @@ s3_client = boto3.client(
 )
 
 
-class AdvertCreateView(CreateView):
-    model = Advert
-    form_class = AdvertForm
-    template_name = 'unique_ad_image_generator/advert_form.html'
-    success_url = reverse_lazy('image_generator:advert_list')
+@method_decorator(login_required, name='dispatch')
+class TasksListView(ListView):
+    model = Task
+    template_name = 'unique_ad_image_generator/tasks.html'
+    context_object_name = 'tasks'
+
+@method_decorator(login_required, name='dispatch')
+class TaskCreateView(CreateView):
+    model = Task
+    template_name = 'add_item.html'
+    form_class = TaskForm
+    success_url = reverse_lazy('image_generator:tasks')
+    extra_context = {'role': 'задачу'}
 
     def form_valid(self, form):
-        # Получаем имя бакета, в который будем сохранять изображения
-        backet_name = form.cleaned_data['backet_name']
-        # Получаем объект архива из формы
-        archive = self.request.FILES.get('images')
-        if not archive:
-            return super().form_invalid(form)
-
-        # Создаём временную директорию для распаковки
-        with tempfile.TemporaryDirectory() as tmpdir:
-
-            # Распаковка архива
-            if zipfile.is_zipfile(archive):
-                with zipfile.ZipFile(archive, 'r') as zip_ref:
-                    zip_ref.extractall(tmpdir)
-
-                # Загрузка файлов на Яндекс Object Storage
-                uploaded_files = []
-                for root, _, files in os.walk(tmpdir):
-                    for file in files:
-                        file_path = os.path.join(root, file)
-                        relative_path = os.path.relpath(file_path, tmpdir)  # Путь внутри архива
-                        s3_key = relative_path.replace("\\", "/")  # Универсальный путь для S3
-
-                        # Загружаем файл в бакет
-                        s3_client.upload_file(file_path, backet_name, s3_key)
-                        file_url = f"{YANDEX_ENDPOINT_URL}/{backet_name}/{s3_key}"
-                        uploaded_files.append(file_url)
-
-                # Сохраняем пути загруженных файлов в модель
-                advert = form.save(commit=False)
-                advert.images = "\n".join(uploaded_files)
-                advert.save()
-            else:
-                form.add_error('images', 'Загруженный файл не является архивом в формате ZIP')
-                return super().form_invalid(form)
-
+        task = form.save()
         return super().form_valid(form)
 
 
-class AdvertListView(ListView):
-    model = Advert
-    template_name = 'unique_ad_image_generator/advert_list.html'
-    context_object_name = 'adverts'
-    paginate_by = 10
+@method_decorator(login_required, name='dispatch')
+class TaskView(LoginRequiredMixin, DetailView):
+    model = Task
+    template_name = 'unique_ad_image_generator/task.html'
+    context_object_name = 'task'
 
-
-class AdvertDetailView(DetailView):
-    model = Advert
-    template_name = 'unique_ad_image_generator/advert_detail.html'
-    context_object_name = 'advert'
+    def get_object(self):
+        return get_object_or_404(Task, pk=self.kwargs.get('pk'), user=self.request.user)

@@ -90,11 +90,3 @@ def upload_files(request):
                 filename=f"{filename}.pdf"
             )
     return render(request, 'create_presentation/upload_files.html')
-
-
-def faq(request):
-    return render(request, 'create_presentation/FAQ.html')
-
-
-def contacts(request):
-    return render(request, 'create_presentation/contacts.html')

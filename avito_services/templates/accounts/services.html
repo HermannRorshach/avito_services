@@ -1,0 +1,21 @@
+{% extends 'auth.html' %}
+
+{% block title %}
+    Сервисы
+{% endblock title %}
+
+{% block content %}
+
+<div class="container mt-4 d-flex justify-content-center">
+    <div class="w-100" style="max-width: 50%;">
+        <h1>Сервисы</h1>
+        <div class="mt-4">
+            <a href="{% url 'create_presentation:upload_files' %}" class="border-button">Генератор презентаций</a>
+        </div>
+        <div class="mt-4">
+            <a href="{% url 'image_generator:tasks' %}" class="border-button">Уникализация изображений</a>
+        </div>
+    </div>
+</div>
+
+{% endblock content %}

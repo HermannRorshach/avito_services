@@ -1,18 +1,6 @@
 {% extends "auth.html" %} {% block title %} Загрузка данных для генерации
 презентации {% endblock %} {% block content %}
 <div class="container">
-  <nav class="top-menu">
-    <ul>
-      <li>
-        <b><a href="{% url 'create_presentation:faq' %}">FAQ</a></b>
-      </li>
-      <li>
-        <b
-          ><a href="{% url 'create_presentation:contacts' %}">Техподдержка</a></b
-        >
-      </li>
-    </ul>
-  </nav>
   <!-- Alert для ошибок -->
   <div id="error-alert" class="alert" style="display: none; color: red">
     <span id="alert-message"></span>
@@ -54,6 +42,11 @@
     </div>
     <button type="submit" class="submit-button">Создать презентацию</button>
   </form>
+  <div class="d-flex justify-content-between my-3">
+    <a class="gray-button ms-auto" href="{% url 'accounts:services' %}">
+        Назад
+    </a>
+</div>
 </div>
 <script>
   document.getElementById("excel").addEventListener("change", function () {

@@ -29,7 +29,7 @@ class CustomPasswordChangeView(PasswordChangeView):
 @method_decorator(superuser_required, name='dispatch')
 class UserCreateView(CreateView):
     model = get_user_model()
-    template_name = 'accounts/add_person.html'
+    template_name = 'add_item.html'
     form_class = CustomUserCreationForm
     success_url = reverse_lazy('users:user_list')
     extra_context = {'role': 'администратора'}

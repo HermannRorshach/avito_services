@@ -5,7 +5,11 @@ from . import views
 app_name = 'image_generator'
 
 urlpatterns = [
-    path('huy', views.AdvertCreateView.as_view(), name='advert_create'),
-    path('advert_list/', views.AdvertListView.as_view(), name='advert_list'),
-    path('adverts/<int:pk>/', views.AdvertDetailView.as_view(), name='advert_detail'),
+    path('tasks', views.TasksListView.as_view(), name='tasks'),
+    path('create_task', views.TaskCreateView.as_view(), name='create_task'),
+    path('task/<int:pk>/', views.TaskView.as_view(), name='task'),
+
+
+    # path('advert_list/', views.AdvertListView.as_view(), name='advert_list'),
+    # path('adverts/<int:pk>/', views.AdvertDetailView.as_view(), name='advert_detail'),
 ]

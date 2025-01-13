@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Список {{ role_plural }}
+{% endblock title %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Задача</h1>
+    <ul class="list-group">
+        Имя бакета: {{ task.bucket_name }}
+        Количество экземпляров копий: {{ task.copy_count }}
+        Время и дата создания задачи: {{ task.created_at }}
+        Тип задачи: {{ task.type }}
+        Статус: {{ task.status }}
+        {% for message in messages %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+        <p>{{ message }}</p>
+        </li>
+        {% endfor %}
+    </ul>
+
+    <div class="d-flex justify-content-between align-items-center my-3">
+        <a href="" class="red-button mt-3">Удалить лишние файлы</a>
+        <a href="" class="red-button mt-3">Исправить</a>
+        <a class="gray-button" href="{% url 'accounts:services' %}">
+            Назад
+        </a>
+    </div>
+</div>
+{% endblock content %}
