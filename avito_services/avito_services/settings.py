@@ -32,9 +32,17 @@ EMAIL_PASSWORD = os.getenv('EMAIL_PASSWORD')
 SECRET_KEY = 'django-insecure-u_7=(&9$7sg)nnr_5(+i@!8gx@avy3_%qs9ozm^q4qoziig0=t'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    'testserver',
+    'www.avitoservices.pythonanywhere.com',
+    'avitoservices.pythonanywhere.com',
+    'www.AvitoServices.pythonanywhere.com',
+    'AvitoServices.pythonanywhere.com',
+    ]
 
 
 # Application definition
@@ -90,14 +98,21 @@ WSGI_APPLICATION = 'avito_services.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': 'django_db',
+#         'USER': 'django_admin',
+#         'PASSWORD': 'VeryDifficu1tPassw0rd',
+#         'HOST': 'localhost',  # или другой хост
+#         'PORT': '5432',  # стандартный порт PostgreSQL
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'django_db',
-        'USER': 'django_admin',
-        'PASSWORD': 'VeryDifficu1tPassw0rd',
-        'HOST': 'localhost',  # или другой хост
-        'PORT': '5432',  # стандартный порт PostgreSQL
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 

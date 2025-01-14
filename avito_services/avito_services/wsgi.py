@@ -11,6 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'unique_ad_image_creator.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'avito_services.avito_services.settings')
 
 application = get_wsgi_application()

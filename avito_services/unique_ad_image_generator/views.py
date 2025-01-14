@@ -1,35 +1,16 @@
-import os
-
-import boto3
-from botocore.config import Config
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.generic import DeleteView, DetailView, ListView
 from django.views.generic.edit import CreateView
-from dotenv import load_dotenv
 
 from .forms import TaskForm
 from .models import Task
-
-# Загружаем переменные окружения
-load_dotenv()
-YANDEX_ACCESS_KEY = os.getenv('YANDEX_CLOUD_ACCESS_KEY_ID')
-YANDEX_SECRET_KEY = os.getenv('YANDEX_CLOUD_SECRET_ACCESS_KEY')
-# YANDEX_BUCKET_NAME = 'adverts-bucket'
-YANDEX_ENDPOINT_URL = 'https://storage.yandexcloud.net'
-
-# Настройка клиента S3 для Яндекс Object Storage
-s3_client = boto3.client(
-    service_name='s3',
-    endpoint_url=YANDEX_ENDPOINT_URL,
-    aws_access_key_id=YANDEX_ACCESS_KEY,
-    aws_secret_access_key=YANDEX_SECRET_KEY,
-    config=Config(signature_version='s3v4')
-)
+from .utils import update_excel_with_image_urls
 
 
 @method_decorator(login_required, name='dispatch')
@@ -59,3 +40,25 @@ class TaskView(LoginRequiredMixin, DetailView):
 
     def get_object(self):
         return get_object_or_404(Task, pk=self.kwargs.get('pk'), user=self.request.user)
+
+
+
+class ImageLinksWriterView(View):
+    def get(self, request, *args, **kwargs):
+        # Отображаем форму для ввода данных (если нужно)
+        return render(request, 'unique_ad_image_generator/write_links_to_table.html')
+
+    def post(self, request, *args, **kwargs):
+        # Получаем данные из формы
+        bucket_name = request.POST.get('bucket_name')
+        file_obj = request.FILES['excel_file']
+        sheet_name = request.POST.get('sheet_name')
+
+        # Генерируем файл с помощью функции update_excel_with_image_urls
+        output = update_excel_with_image_urls(bucket_name, file_obj, sheet_name)
+
+
+        # Формируем ответ для скачивания файла
+        response = HttpResponse(output, content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = f'attachment; filename="{file_obj.name.rsplit(".", 1)[0]}_with_links.xlsx"'
+        return response

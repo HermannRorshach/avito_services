@@ -334,3 +334,7 @@ ul {
 .form-group {
     margin-bottom: 20px;
 }
+
+.write-links {
+    width: 45%; /* Полная ширина */
+  }
